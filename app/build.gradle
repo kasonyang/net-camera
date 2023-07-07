@@ -1,0 +1,52 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 23
+//    buildToolsVersion '28.0.3'
+
+    defaultConfig {
+        applicationId "site.kason.netcamera"
+        minSdkVersion 21
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    packagingOptions {
+        exclude 'META-INF/native-image/**'
+    }
+}
+
+configurations {
+    javacpp
+}
+
+task javacppExtract(type: Copy) {
+    dependsOn configurations.javacpp
+
+    from { configurations.javacpp.collect { zipTree(it) } }
+    include "lib/**"
+    into "$buildDir/javacpp/"
+    android.sourceSets.main.jniLibs.srcDirs += ["$buildDir/javacpp/lib/"]
+
+    tasks.getByName('preBuild').dependsOn javacppExtract
+}
+
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:23.4.0'
+    implementation group: 'org.bytedeco', name: 'javacv', version: '1.5.9'
+    javacpp group: 'org.bytedeco', name: 'openblas-platform', version: '0.3.23-1.5.9'
+    javacpp group: 'org.bytedeco', name: 'opencv-platform', version: '4.7.0-1.5.9'
+    javacpp group: 'org.bytedeco', name: 'ffmpeg-platform', version: '6.0-1.5.9'
+}
