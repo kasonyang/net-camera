@@ -25,5 +25,6 @@ third-part/SDL2-xxxx/lib/
 ```
 mkdir build
 cd build
+cmake ..
 cmake --build .
 ```
